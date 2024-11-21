@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc, collection, getDocs } from "firebase/firestore";
 import { View, Text, StatusBar, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import ImageCarousel from "../components/carouselAdComponent";
 import MaestrosScroll from "../components/scrollViewMaestros";
@@ -11,6 +12,7 @@ import { useFonts } from "expo-font";
 const Main = () => {
   const [username, setUsername] = useState("usuario");
   const [userPhoto, setUserPhoto] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
       const fetchUserData = async () => {
@@ -115,14 +117,14 @@ const Main = () => {
 
                 <View style={styles.otherMenuContainer}>
 
-                    <TouchableOpacity style={styles.MenuButton}>
+                    <TouchableOpacity style={styles.MenuButton} onPress={() => navigation.navigate('Presupuesto')}>
                         <View>
                             <Text style = {styles.titleTextIcon}>Presupuesto</Text>
                             <Image style = {styles.imageIcon} source={require("../assets/images/brickEmoji.png")} />
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity  style={styles.MenuButton}>
+                    <TouchableOpacity  style={styles.MenuButton} onPress={() => navigation.navigate('Settings')}>
                         <View>
                             <Text style = {styles.titleTextIcon}>Configuración</Text>
                             <Image style = {styles.imageIcon} source={require("../assets/images/settingsEmoji.png")} />

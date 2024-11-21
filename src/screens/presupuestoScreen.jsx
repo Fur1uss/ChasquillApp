@@ -5,8 +5,8 @@ import { useFonts } from "expo-font";
 import { useNavigation } from "@react-navigation/native";
 
 
-const presupuestoScreen = () => {
+const Presupuesto = () => {
     
 }
 
-export default presupuestoScreen;
+export default Presupuesto;
