@@ -19,9 +19,9 @@ function ContainerRoutes(){
             <Stack.Navigator initialRouteName="Home">
                 <Stack.Screen name="Home" component={Home} />
                 <Stack.Screen name="Login" component={Login} options={ {headerShown: false} } />
-                <Stack.Screen name="Main" component={Main} options={ {headerShown: false} }  />
+                <Stack.Screen name="Main" component={Main} options={ {headerShown: false, navigationBarHidden: true}}/>
                 <Stack.Screen name="Register" component={Register} options={ {headerShown: false} } />
-                <Stack.Screen name="Settings" component={Settings} options={ {headerShown: false} }  />
+                <Stack.Screen name="Settings" component={Settings} options={ {headerShown: false, navigationBarHidden: true}}/>
                 <Stack.Screen name="Presupuesto" component={Presupuesto} options={ {headerShown: false} }  />
 
                 

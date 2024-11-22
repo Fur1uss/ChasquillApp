@@ -30,7 +30,12 @@ const Login = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         console.log("Usuario logueado");
+        
         navigation.navigate("Home");
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'Main' }]
+        });
       })
       .catch((error) => {
         const errorCode = error.code;
