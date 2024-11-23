@@ -10,6 +10,10 @@ import Main from "../screens/mainScreen";
 
 import Settings from "../screens/settingsScreen";
 import Presupuesto from "../screens/presupuestoScreen";
+import Hire from "../screens/hireScreen";
+import Announce from "../screens/announceScreen";
+
+
 const Stack = createNativeStackNavigator();
 
 
@@ -23,6 +27,8 @@ function ContainerRoutes(){
                 <Stack.Screen name="Register" component={Register} options={ {headerShown: false} } />
                 <Stack.Screen name="Settings" component={Settings} options={ {headerShown: false, navigationBarHidden: true}}/>
                 <Stack.Screen name="Presupuesto" component={Presupuesto} options={ {headerShown: false} }  />
+                <Stack.Screen name="Hire" component={Hire} options={ {headerShown: false} } />
+                <Stack.Screen name="Announce" component={Announce} options={ {headerShown: false} } />
 
                 
             </Stack.Navigator>

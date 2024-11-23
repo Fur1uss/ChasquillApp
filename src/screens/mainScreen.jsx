@@ -7,6 +7,9 @@ import { useNavigation } from "@react-navigation/native";
 import ImageCarousel from "../components/carouselAdComponent";
 import MaestrosScroll from "../components/scrollViewMaestros";
 
+import LottieView from 'lottie-react-native';
+
+
 import { useFonts } from "expo-font";
 
 const Main = () => {
@@ -108,28 +111,54 @@ const Main = () => {
             </View>
 
             <View style={styles.interactiveMenuContainer}>
-                <View style={styles.maestrosSliderContainer}>
-                    <Text style ={styles.maestrosTitleText}>Maestros</Text>
-                    <View style = {styles.sliderMaestrosContainer}>
-                        <MaestrosScroll />
+
+                <View style = {styles.mainMenuLeft}>
+                    <View style={styles.maestrosSliderContainer}>
+
+                        <Text style ={styles.maestrosTitleText}>Maestros</Text>
+
+                        <View style = {styles.sliderMaestrosContainer}>
+                            <MaestrosScroll />
+                        </View>
                     </View>
+
+                    <View style = {styles.bottomButtonsContainer}>
+
+                        <TouchableOpacity style = {styles.bottomTouchableContainer} onPress={() => navigation.navigate('Settings')}>
+                            <View style = {styles.bottomButtonsConfig}>
+                                <Text style = {styles.bottomButtonText}>Configuracion</Text>
+                                <Image style = {styles.bottomButtonImage} source={require("../assets/images/settingsEmoji.png")}/>
+                            </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style = {styles.bottomTouchableContainer} onPress={() => navigation.navigate('Presupuesto')}>
+                            <View style = {styles.bottomButtonsConfig}>
+                                <Text style = {styles.bottomButtonText}>Presupuesto</Text>
+                                <Image style = {[styles.bottomButtonImage, {marginLeft: 10}]} source={require("../assets/images/brickEmoji.png")}/>
+                            </View>
+                        </TouchableOpacity>
+
+                    </View>
+
                 </View>
+
 
                 <View style={styles.otherMenuContainer}>
 
-                    <TouchableOpacity style={styles.MenuButton} onPress={() => navigation.navigate('Presupuesto')}>
+                    <TouchableOpacity style={styles.MenuButton} onPress={() => navigation.navigate('Hire')}>
                         <View>
-                            <Text style = {styles.titleTextIcon}>Presupuesto</Text>
-                            <Image style = {styles.imageIcon} source={require("../assets/images/brickEmoji.png")} />
+                            <Text style = {styles.titleTextIcon}>Contratar</Text>
+                            <LottieView autoPlay loop style = {[styles.imageIcon, {marginLeft: 2}]} source={require("../assets/animations/money.json")} />
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity  style={styles.MenuButton} onPress={() => navigation.navigate('Settings')}>
+                    <TouchableOpacity  style={styles.MenuButton} onPress={() => navigation.navigate('Announce')}>
                         <View>
-                            <Text style = {styles.titleTextIcon}>Configuración</Text>
-                            <Image style = {styles.imageIcon} source={require("../assets/images/settingsEmoji.png")} />
+                            <Text style = {styles.titleTextIcon}>Anunciar</Text>
+                            <LottieView autoPlay loop style = {styles.imageIcon} source={require("../assets/animations/construction.json")} />
                         </View>
                     </TouchableOpacity>
+
                 </View>
             </View>
 
@@ -221,15 +250,29 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
 
-    maestrosSliderContainer: {
+    mainMenuLeft: {
         width: '60%',
         height: '100%',
+        borderRadius: 10,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: "center",
+        justifyContent: "space-between",
+
+    },
+
+    maestrosSliderContainer: {
+        width: '100%',
+        
+        height: '75%',
         backgroundColor: '#FFF',
         borderRadius: 10,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+
+        
     },
 
     maestrosTitleText: {
@@ -243,6 +286,58 @@ const styles = StyleSheet.create({
         width: '90%',
         height: '80%',
         borderRadius: 10,
+
+    },
+
+    bottomButtonsContainer: {
+        width: '100%',
+        height: '24%',
+        borderRadius: 0,
+
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+
+    bottomTouchableContainer: {
+        width: '100%',
+        height: '48%',
+        borderRadius: 10,
+        backgroundColor: '#FFF',
+    },
+
+    bottomButtonsConfig: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 10,
+        backgroundColor: '#FFF',
+
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: "space-around",
+        
+        padding: 0,
+        margin: 0,
+
+    },
+
+    bottomButtonText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        fontFamily: 'Figtree',
+        textAlign: "left",
+    },
+
+
+    bottomButtonImage: {
+        width: "15%",
+        height: "70%",
+        resizeMode: 'contain',
+
+        padding: 0,
+        margin: 0,
     },
 
     otherMenuContainer: {
@@ -266,9 +361,10 @@ const styles = StyleSheet.create({
     },
 
     titleTextIcon: {
-        fontSize: 15,
+        fontSize: 20,
         fontWeight: 'bold',
         fontFamily: 'Figtree',
+        textAlign: 'center',
     },
 
     imageIcon: {
@@ -276,14 +372,13 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         resizeMode: 'contain',
-        marginLeft: 10,
     },
 
     footerImage: {
         width: "100%",
         height: 50,
         backgroundColor: '#FFD148',
-        marginTop: 30,
+        marginTop: 80,
 
         flex: 1,
         display: 'flex',
