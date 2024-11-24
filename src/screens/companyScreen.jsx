@@ -5,8 +5,8 @@ import { useFonts } from "expo-font";
 import { useNavigation } from "@react-navigation/native";
 
 
-const Presupuesto = () => {
+const Empresas = () => {
     
 }
 
-export default Presupuesto;
+export default Empresas;

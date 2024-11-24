@@ -9,7 +9,7 @@ import Register from "../screens/registerScreen";
 import Main from "../screens/mainScreen";
 
 import Settings from "../screens/settingsScreen";
-import Presupuesto from "../screens/presupuestoScreen";
+import Empresas from "../screens/companyScreen";
 import Hire from "../screens/hireScreen";
 import Announce from "../screens/announceScreen";
 
@@ -26,7 +26,7 @@ function ContainerRoutes(){
                 <Stack.Screen name="Main" component={Main} options={ {headerShown: false, navigationBarHidden: true}}/>
                 <Stack.Screen name="Register" component={Register} options={ {headerShown: false} } />
                 <Stack.Screen name="Settings" component={Settings} options={ {headerShown: false, navigationBarHidden: true}}/>
-                <Stack.Screen name="Presupuesto" component={Presupuesto} options={ {headerShown: false} }  />
+                <Stack.Screen name="Empresas" component={Empresas} options={ {headerShown: false} }  />
                 <Stack.Screen name="Hire" component={Hire} options={ {headerShown: false} } />
                 <Stack.Screen name="Announce" component={Announce} options={ {headerShown: false} } />
 

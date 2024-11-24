@@ -115,7 +115,7 @@ const Main = () => {
                 <View style = {styles.mainMenuLeft}>
                     <View style={styles.maestrosSliderContainer}>
 
-                        <Text style ={styles.maestrosTitleText}>Maestros</Text>
+                        <Text style ={styles.maestrosTitleText}>Trabajos</Text>
 
                         <View style = {styles.sliderMaestrosContainer}>
                             <MaestrosScroll />
@@ -131,10 +131,10 @@ const Main = () => {
                             </View>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style = {styles.bottomTouchableContainer} onPress={() => navigation.navigate('Presupuesto')}>
+                        <TouchableOpacity style = {styles.bottomTouchableContainer} onPress={() => navigation.navigate('Empresas')}>
                             <View style = {styles.bottomButtonsConfig}>
-                                <Text style = {styles.bottomButtonText}>Presupuesto</Text>
-                                <Image style = {[styles.bottomButtonImage, {marginLeft: 10}]} source={require("../assets/images/brickEmoji.png")}/>
+                                <Text style = {styles.bottomButtonText}>Empresas</Text>
+                                <Image style = {[styles.bottomButtonImage, {marginLeft: 10}]} source={require("../assets/images/buildingEmoji.png")}/>
                             </View>
                         </TouchableOpacity>
 
