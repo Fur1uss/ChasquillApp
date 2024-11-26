@@ -13,19 +13,34 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist":{
+        "NSPhotoLibraryUsageDescription": "Se necesita acceso a la biblioteca de fotos para seleccionar imagenes."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "READ_EXTERNAL_STORAGE", 
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photoCameraPermission": "La aplicación necesita acceso a tu cámara para tomar fotos.",
+          "photoLibraryPermission": "La aplicación necesita acceso a tu biblioteca de fotos para seleccionar imágenes."
+        }
+      ]
     ]
   }
 }

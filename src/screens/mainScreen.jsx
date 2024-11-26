@@ -16,70 +16,83 @@ const Main = () => {
   const [username, setUsername] = useState("usuario");
   const [userPhoto, setUserPhoto] = useState(null);
   const navigation = useNavigation();
+  const [userRole, setUserRole] = useState(null)
 
   useEffect(() => {
-      const fetchUserData = async () => {
-          try {
-              const auth = getAuth();
-              const db = getFirestore();
-              const user = auth.currentUser;
-
-              if (!db) {
-                  console.warn("Error: No se pudo establecer conexión con Firestore");
-                  return;
-              }
-
-              if (!user) {
-                  console.warn("Error: No hay usuario autenticado");
-                  return;
-              }
-
-              const usersCollection = collection(db, "users");
-              const querySnapshot = await getDocs(usersCollection);
-              
-              if (querySnapshot.empty) {
-                  console.warn("");
-              } else {
-              }
-
-              // Buscar documento con UID coincidente
-              const matchingDoc = querySnapshot.docs.find(
-                  docSnap => docSnap.data().uid === user.uid
-              );
-
-              if (!matchingDoc) {
-                  console.warn(`No se encontró documento para el UID: ${user.uid}`);
-                  return;
-              }
-
-              const userData = matchingDoc.data();
-
-              // Asignar username y foto con múltiples verificaciones
-              const displayUsername = userData.userName || userData.username || "usuario";
-              const displayPhoto = userData.profilePicture || "";
-
-              setUsername(displayUsername);
-              setUserPhoto(displayPhoto);
-
-          } catch (error) {
-              console.error("");
+    const fetchUserData = async () => {
+      try {
+        const auth = getAuth();
+        const db = getFirestore();
+        const user = auth.currentUser;
+  
+        if (!db) {
+          console.warn("Error: No se pudo establecer conexión con Firestore");
+          return;
+        }
+  
+        if (!user) {
+          console.warn("Error: No hay usuario autenticado");
+          return;
+        }
+  
+        const usersCollection = collection(db, "users");
+        const querySnapshot = await getDocs(usersCollection);
+  
+        const matchingDoc = querySnapshot.docs.find(
+          (docSnap) => docSnap.data().uid === user.uid
+        );
+  
+        if (!matchingDoc) {
+          console.warn(`No se encontró documento para el UID: ${user.uid}`);
+          return;
+        }
+  
+        const userData = matchingDoc.data();
+        setUsername(userData.userName || userData.username || "usuario");
+        setUserPhoto(userData.profilePicture || "");
+  
+        // Verificar relación con empresas
+        const empresasCollection = collection(db, "empresas");
+        const empresasSnapshot = await getDocs(empresasCollection);
+  
+        for (const empresaDoc of empresasSnapshot.docs) {
+          const empresaData = empresaDoc.data();
+  
+          if (empresaData.administradorEmpresa === user.uid) {
+            setUserRole("admin");
+            return;
           }
-      };
-
-      const auth = getAuth();
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-          if (user) {
-              fetchUserData();
+  
+          if (empresaData.miembrosEmpresa?.includes(user.uid)) {
+            setUserRole("member");
+            return;
           }
-      });
-
-      return () => unsubscribe();
+        }
+  
+        setUserRole(null); // Si no es administrador ni miembro
+      } catch (error) {
+        console.error("Error al obtener datos del usuario:", error);
+      }
+    };
+  
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchUserData();
+      }
+    });
+  
+    return () => unsubscribe();
   }, []);
+  
 
     // Carga de fuente personalizada
     const [fontsLoaded] = useFonts({
         Figtree: require("../assets/fonts/Figtree.ttf"),
+        FigtreeBold: require("../assets/fonts/FigtreeBold.ttf"),
     });
+    
+    if (!fontsLoaded) return null;
 
     if (!fontsLoaded) return null;
    
@@ -131,12 +144,31 @@ const Main = () => {
                             </View>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style = {styles.bottomTouchableContainer} onPress={() => navigation.navigate('Empresas')}>
-                            <View style = {styles.bottomButtonsConfig}>
-                                <Text style = {styles.bottomButtonText}>Empresas</Text>
-                                <Image style = {[styles.bottomButtonImage, {marginLeft: 10}]} source={require("../assets/images/buildingEmoji.png")}/>
+                        <TouchableOpacity
+                            style={styles.bottomTouchableContainer}
+                            onPress={() => {
+                                if (userRole === "admin") {
+                                navigation.navigate("AdminCompany");
+                                console.log("Entrando como administrador");
+                                } else if (userRole === "member") {
+                                navigation.navigate("UserCompany");
+                                console.log("Entrando como usuario");
+                                } else {
+                                navigation.navigate("Company");
+                                
+                                console.log("Entra como usuario normal");
+                                }
+                            }}
+                            >
+                            <View style={styles.bottomButtonsConfig}>
+                                <Text style={styles.bottomButtonText}>Empresas</Text>
+                                <Image
+                                style={[styles.bottomButtonImage, { marginLeft: 10 }]}
+                                source={require("../assets/images/buildingEmoji.png")}
+                                />
                             </View>
                         </TouchableOpacity>
+
 
                     </View>
 
@@ -220,8 +252,7 @@ const styles = StyleSheet.create({
 
     textInfoUser: {
         fontSize: 35,
-        fontWeight: 'bold',
-        fontFamily: 'Figtree',
+        fontFamily: 'FigtreeBold',
     },
 
     userPhoto: {
@@ -277,8 +308,7 @@ const styles = StyleSheet.create({
 
     maestrosTitleText: {
         fontSize: 30,
-        fontWeight: 'bold',
-        fontFamily: 'Figtree',
+        fontFamily: 'FigtreeBold',
         textAlign: 'center',
     },
 
@@ -325,8 +355,7 @@ const styles = StyleSheet.create({
 
     bottomButtonText: {
         fontSize: 20,
-        fontWeight: 'bold',
-        fontFamily: 'Figtree',
+        fontFamily: 'FigtreeBold',
         textAlign: "left",
     },
 
@@ -362,8 +391,7 @@ const styles = StyleSheet.create({
 
     titleTextIcon: {
         fontSize: 20,
-        fontWeight: 'bold',
-        fontFamily: 'Figtree',
+        fontFamily: 'FigtreeBold',
         textAlign: 'center',
     },
 

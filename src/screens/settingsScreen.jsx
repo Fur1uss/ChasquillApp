@@ -8,6 +8,8 @@ import { getAuth, signOut } from "firebase/auth";
 
 const Settings = () => {
 
+
+
     const navigation = useNavigation();
 
     const handleGoToMain = () => {
