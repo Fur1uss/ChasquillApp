@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StatusBar, Image, StyleSheet, ImageBackground, TextInput, KeyboardAvoidingView, TouchableOpacity, Platform } from "react-native";
+import { View, Text, StatusBar, Image, StyleSheet, ImageBackground, TextInput, KeyboardAvoidingView, TouchableOpacity, Platform, ActivityIndicator, Modal } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useFonts } from 'expo-font';
 
@@ -11,8 +11,6 @@ import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 
 import CustomAlert from "../components/customAlerts";
 
-// initializeApp(firebaseConfig);
-
 const Register = () => {
     const [email, setEmail] = useState("");
     const [userName, setUserName] = useState("");
@@ -22,9 +20,9 @@ const Register = () => {
 
     const [alertVisible, setAlertVisible] = React.useState(false);
     const [alertMessage, setAlertMessage] = React.useState('');
+    const [loading, setLoading] = React.useState(false); // Estado para la ventana de carga
 
     const auth = getAuth();
-    
     const navigation = useNavigation();
 
     const validateEmail = (email) => {
@@ -72,59 +70,57 @@ const Register = () => {
             return;
         }
 
-        const userNameExists = await checkUserNameExists(userName);
-        if (userNameExists) {
-            setAlertMessage("⚠️El nombre de usuario ya está en uso.");
-            setAlertVisible(true);
-            return;
-        }
+        setLoading(true); // Activar ventana de carga
 
-        const rutUserExist = await checkRutExists(rut);
-        if (rutUserExist) {
-            setAlertMessage("⚠️El rut ya está en uso.");
-            setAlertVisible(true);
-            return;
-        }
-
-        const phoneUserExist = await checkPhoneExists(phone);
-        if (phoneUserExist) {
-            setAlertMessage("⚠️El teléfono ya está en uso.");
-            setAlertVisible(true);
-            return;
-        }
-
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                console.log('Usuario creado:', user);
-
-                const userRef = collection(db, 'users');
-                addDoc(userRef, {
-                    uid: user.uid,
-                    userName: userName,
-                    email: email,
-                    phone: phone,
-                    rut: rut,
-                    createdAt: new Date(),
-                    profilePicture: "",
-                })
-                    .then(() => {
-                        console.log('Datos del usuario guardados en Firestore');
-                        setAlertMessage("💚Cuenta creada correctamente.");
-                        setAlertVisible(true);
-                        navigation.navigate('Login');
-                    })
-                    .catch((error) => {
-                        console.error("Error al guardar los datos en Firestore:", error.message);
-                        setAlertMessage("⚠️No se pudo guardar la información en Firestore.");
-                        setAlertVisible(true);
-                    });
-            })
-            .catch((error) => {
-                console.log(error.message);
-                setAlertMessage(error.message);
+        try {
+            const userNameExists = await checkUserNameExists(userName);
+            if (userNameExists) {
+                setAlertMessage("⚠️El nombre de usuario ya está en uso.");
                 setAlertVisible(true);
+                setLoading(false); // Desactivar ventana de carga
+                return;
+            }
+
+            const rutUserExist = await checkRutExists(rut);
+            if (rutUserExist) {
+                setAlertMessage("⚠️El rut ya está en uso.");
+                setAlertVisible(true);
+                setLoading(false);
+                return;
+            }
+
+            const phoneUserExist = await checkPhoneExists(phone);
+            if (phoneUserExist) {
+                setAlertMessage("⚠️El teléfono ya está en uso.");
+                setAlertVisible(true);
+                setLoading(false);
+                return;
+            }
+
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            const userRef = collection(db, 'users');
+            await addDoc(userRef, {
+                uid: user.uid,
+                userName: userName,
+                email: email,
+                phone: phone,
+                rut: rut,
+                createdAt: new Date(),
+                profilePicture: "",
             });
+
+            setAlertMessage("💚Cuenta creada correctamente.");
+            setAlertVisible(true);
+            navigation.navigate('Login');
+        } catch (error) {
+            console.error("Error:", error.message);
+            setAlertMessage(error.message);
+            setAlertVisible(true);
+        } finally {
+            setLoading(false); // Desactivar ventana de carga
+        }
     };
 
     const [fontsLoaded] = useFonts({
@@ -179,6 +175,13 @@ const Register = () => {
                 </KeyboardAvoidingView>
             </View>
 
+            <Modal transparent={true} visible={loading}>
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#482D1C" />
+                    <Text style={styles.loadingText}>Registrando...</Text>
+                </View>
+            </Modal>
+
             <CustomAlert
                 visible={alertVisible}
                 message={alertMessage}
@@ -189,86 +192,17 @@ const Register = () => {
 };
 
 const styles = StyleSheet.create({
-    registerContainer: {
-        flex: 0,
-        backgroundColor: "#fff",
-        textAlign: "center",
-        height: "100%",
-        width: "100%",
-    },
-    registerTitleText: {
-        fontSize: 25,
-        fontWeight: "bold",
-        fontFamily: "Figtree",
-        color: "#482D1C",
-        textAlign: "center",
-        margin: 20,
-        marginBottom: 10,
-    },
-
-    registerForumContainer: {
-        flex: 1,
-        backgroundColor: "#fff",
-        height: "100%",
-        width: "100%",
-    },
-
-    forumInputsContainer: {
-        flex: 0,
-        justifyContent: "start",
-        alignItems: "center",
-        height: "50%",
-        width: "95%",
-        marginTop: -50,
-    },
-
-    fullnameInputObject: {
-        flex: 0,
-        marginBottom: 10,
-        justifyContent: "start",
-        alignItems: "start",
-        height: "auto",
-        width: "100%",
-    },
-    fullnameText: {
-        fontSize: 10,
-        fontWeight: "bold",
-        fontFamily: "Figtree",
-        color: "#482D1C",
-        textAlign: "left",
-        margin: 0,
-    },
-
-    fullnameInput: {
-        width: "100%",
-        height: 40,
-        backgroundColor: "#fff",
-        borderRadius: 12,
-        padding: 5,
-        elevation: 10,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        margin: 0,
-    },
-
-    buttonImage: {
-        width: 100,
-        height: 70,
-        resizeMode: 'contain',
-        marginTop: 20,
-    },
-
-    container: {
-        flex: 0,
-        marginTop: 20,
-        alignItems: "center",
-        justifyContent: "center",
-    },
+    registerContainer: { flex: 1, backgroundColor: "#fff", textAlign: "center", height: "100%", width: "100%" },
+    registerTitleText: { fontSize: 25, fontWeight: "bold", fontFamily: "Figtree", color: "#482D1C", textAlign: "center", margin: 20, marginBottom: 10 },
+    registerForumContainer: { flex: 1, backgroundColor: "#fff", height: "100%", width: "100%" },
+    forumInputsContainer: { justifyContent: "start", alignItems: "center", width: "95%", marginTop: -50 },
+    fullnameInputObject: { marginBottom: 10, width: "100%" },
+    fullnameText: { fontSize: 10, fontWeight: "bold", fontFamily: "Figtree", color: "#482D1C" },
+    fullnameInput: { height: 40, backgroundColor: "#fff", borderRadius: 12, padding: 5, shadowColor: "#000", elevation: 10 },
+    buttonImage: { width: 100, height: 70, resizeMode: 'contain', marginTop: 20 },
+    container: { marginTop: 20, alignItems: "center", justifyContent: "center" },
+    loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0, 0, 0, 0.5)" },
+    loadingText: { marginTop: 10, fontSize: 16, color: "#fff" }
 });
 
 export default Register;
