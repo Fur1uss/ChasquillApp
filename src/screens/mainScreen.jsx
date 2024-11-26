@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, getDoc, collection, getDocs } from "firebase/firestore";
-import { View, Text, StatusBar, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { View, Text, StatusBar, Image, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import ImageCarousel from "../components/carouselAdComponent";
 import MaestrosScroll from "../components/scrollViewMaestros";
 
 import LottieView from 'lottie-react-native';
-
-
 import { useFonts } from "expo-font";
 
 const Main = () => {
   const [username, setUsername] = useState("usuario");
   const [userPhoto, setUserPhoto] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
-  const [userRole, setUserRole] = useState(null)
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -31,7 +30,7 @@ const Main = () => {
         }
   
         if (!user) {
-          console.warn("Error: No hay usuario autenticado");
+
           return;
         }
   
@@ -51,7 +50,7 @@ const Main = () => {
         setUsername(userData.userName || userData.username || "usuario");
         setUserPhoto(userData.profilePicture || "");
   
-        // Verificar relación con empresas
+
         const empresasCollection = collection(db, "empresas");
         const empresasSnapshot = await getDocs(empresasCollection);
   
@@ -69,12 +68,14 @@ const Main = () => {
           }
         }
   
-        setUserRole(null); // Si no es administrador ni miembro
+        setUserRole(null);
       } catch (error) {
         console.error("Error al obtener datos del usuario:", error);
+      } finally {
+        setLoading(false);
       }
     };
-  
+
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -84,123 +85,130 @@ const Main = () => {
   
     return () => unsubscribe();
   }, []);
-  
 
-    // Carga de fuente personalizada
-    const [fontsLoaded] = useFonts({
-        Figtree: require("../assets/fonts/Figtree.ttf"),
-        FigtreeBold: require("../assets/fonts/FigtreeBold.ttf"),
-    });
-    
-    if (!fontsLoaded) return null;
 
-    if (!fontsLoaded) return null;
-   
+  const [fontsLoaded] = useFonts({
+    Figtree: require("../assets/fonts/Figtree.ttf"),
+    FigtreeBold: require("../assets/fonts/FigtreeBold.ttf"),
+  });
+
+  if (!fontsLoaded || loading) {
     return (
-        <View style={styles.mainScreenContainer}>
-            <StatusBar barStyle="dark-content" backgroundColor={"#FFD148"} />
-            <Image style={styles.mainScreenLogo} source={require('../assets/images/logoChasquillApp.png')} />
-           
-            <View style={styles.sliderAdsContainer}>
-                <ImageCarousel />
-            </View>
-            
-            <View style={styles.usernameInfoContainer}>
-                <View style={styles.infoUser}>
-                    <Text style={styles.textInfoUser} adjustsFontSizeToFit numberOfLines={2} minimumFontScale={0.5}>
-                        Hola!{"\n"}@{username}
-                    </Text>
-                </View>
-                <View style={styles.userPhoto}>
-                    <Image
-                        style={styles.userPhotoImage}
-                        source={
-                            userPhoto
-                                ? { uri: userPhoto }
-                                : require("../assets/images/defaultUserImage.png")
-                        }
-                    />
-                </View>
-            </View>
-
-            <View style={styles.interactiveMenuContainer}>
-
-                <View style = {styles.mainMenuLeft}>
-                    <View style={styles.maestrosSliderContainer}>
-
-                        <Text style ={styles.maestrosTitleText}>Trabajos</Text>
-
-                        <View style = {styles.sliderMaestrosContainer}>
-                            <MaestrosScroll />
-                        </View>
-                    </View>
-
-                    <View style = {styles.bottomButtonsContainer}>
-
-                        <TouchableOpacity style = {styles.bottomTouchableContainer} onPress={() => navigation.navigate('Settings')}>
-                            <View style = {styles.bottomButtonsConfig}>
-                                <Text style = {styles.bottomButtonText}>Configuracion</Text>
-                                <Image style = {styles.bottomButtonImage} source={require("../assets/images/settingsEmoji.png")}/>
-                            </View>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.bottomTouchableContainer}
-                            onPress={() => {
-                                if (userRole === "admin") {
-                                navigation.navigate("AdminCompany");
-                                console.log("Entrando como administrador");
-                                } else if (userRole === "member") {
-                                navigation.navigate("UserCompany");
-                                console.log("Entrando como usuario");
-                                } else {
-                                navigation.navigate("Company");
-                                
-                                console.log("Entra como usuario normal");
-                                }
-                            }}
-                            >
-                            <View style={styles.bottomButtonsConfig}>
-                                <Text style={styles.bottomButtonText}>Empresas</Text>
-                                <Image
-                                style={[styles.bottomButtonImage, { marginLeft: 10 }]}
-                                source={require("../assets/images/buildingEmoji.png")}
-                                />
-                            </View>
-                        </TouchableOpacity>
-
-
-                    </View>
-
-                </View>
-
-
-                <View style={styles.otherMenuContainer}>
-
-                    <TouchableOpacity style={styles.MenuButton} onPress={() => navigation.navigate('Hire')}>
-                        <View>
-                            <Text style = {styles.titleTextIcon}>Contratar</Text>
-                            <LottieView autoPlay loop style = {[styles.imageIcon, {marginLeft: 2}]} source={require("../assets/animations/money.json")} />
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity  style={styles.MenuButton} onPress={() => navigation.navigate('Announce')}>
-                        <View>
-                            <Text style = {styles.titleTextIcon}>Anunciar</Text>
-                            <LottieView autoPlay loop style = {styles.imageIcon} source={require("../assets/animations/construction.json")} />
-                        </View>
-                    </TouchableOpacity>
-
-                </View>
-            </View>
-
-            <View style = {styles.footerImage}></View>
-
-        </View>
+      <View style={styles.loadingContainer}>
+        <LottieView
+          source={require("../assets/animations/loadingAnimation.json")}
+          autoPlay
+          loop
+          style={styles.loadingAnimation}
+        />
+      </View>
     );
+  }
+
+  return (
+    <View style={styles.mainScreenContainer}>
+      <StatusBar barStyle="dark-content" backgroundColor={"#FFD148"} />
+      <Image style={styles.mainScreenLogo} source={require('../assets/images/logoChasquillApp.png')} />
+
+      <View style={styles.sliderAdsContainer}>
+        <ImageCarousel />
+      </View>
+
+      <View style={styles.usernameInfoContainer}>
+        <View style={styles.infoUser}>
+          <Text style={styles.textInfoUser} adjustsFontSizeToFit numberOfLines={2} minimumFontScale={0.5}>
+            Hola!{"\n"}@{username}
+          </Text>
+        </View>
+        <View style={styles.userPhoto}>
+          <Image
+            style={styles.userPhotoImage}
+            source={
+              userPhoto ? { uri: userPhoto } : require("../assets/images/defaultUserImage.png")
+            }
+          />
+        </View>
+      </View>
+
+      <View style={styles.interactiveMenuContainer}>
+        <View style={styles.mainMenuLeft}>
+          <View style={styles.maestrosSliderContainer}>
+            <Text style={styles.maestrosTitleText}>Trabajos</Text>
+            <View style={styles.sliderMaestrosContainer}>
+              <MaestrosScroll />
+            </View>
+          </View>
+
+          <View style={styles.bottomButtonsContainer}>
+            <TouchableOpacity
+              style={styles.bottomTouchableContainer}
+              onPress={() => navigation.navigate('Settings')}
+            >
+              <View style={styles.bottomButtonsConfig}>
+                <Text style={styles.bottomButtonText}>Configuracion</Text>
+                <Image style={styles.bottomButtonImage} source={require("../assets/images/settingsEmoji.png")} />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.bottomTouchableContainer}
+              onPress={() => {
+                if (userRole === "admin") {
+                  navigation.navigate("AdminCompany");
+                } else if (userRole === "member") {
+                  navigation.navigate("UserCompany");
+                } else {
+                  navigation.navigate("Company");
+                }
+              }}
+            >
+              <View style={styles.bottomButtonsConfig}>
+                <Text style={styles.bottomButtonText}>Empresas</Text>
+                <Image style={[styles.bottomButtonImage, { marginLeft: 10 }]} source={require("../assets/images/buildingEmoji.png")} />
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.otherMenuContainer}>
+          <TouchableOpacity style={styles.MenuButton} onPress={() => navigation.navigate('Hire')}>
+            <View>
+              <Text style={styles.titleTextIcon}>Contratar</Text>
+              <LottieView autoPlay loop style={[styles.imageIcon, { marginLeft: 2 }]} source={require("../assets/animations/money.json")} />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.MenuButton} onPress={() => navigation.navigate('Announce')}>
+            <View>
+              <Text style={styles.titleTextIcon}>Anunciar</Text>
+              <LottieView autoPlay loop style={styles.imageIcon} source={require("../assets/animations/construction.json")} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.footerImage}></View>
+    </View>
+  );
 };
 
+
 const styles = StyleSheet.create({
+
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#F4F4F4",
+
+      },
+      loadingAnimation: {
+        width: 100,  // Tamaño más pequeño
+        height: 100, // Tamaño más pequeño
+        backgroundColor: 'transparent', // Fondo transparente
+        borderRadius: 10, // Bordes redondeados si lo deseas
+      },
+      
     mainScreenContainer: {
         flex: 1,
         justifyContent: 'start',

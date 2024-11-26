@@ -142,6 +142,7 @@ const NuevaEmpresas = () => {
         logoEmpresa: logoUrl,
         nombreEmpresa: name,
         miembrosEmpresa: [],
+        notaEmpresa: 0,
       });
       console.log("Empresa registrada con éxito. ID de la empresa:", empresaRef.id);
 

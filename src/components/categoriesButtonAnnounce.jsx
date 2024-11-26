@@ -24,10 +24,10 @@ const CategoriesGrid = () => {
 
     const handlePress = (id) => {
         if (selectedCategories.includes(id)) {
-            // Si ya está seleccionado, se deselecciona
+
             setSelectedCategories(selectedCategories.filter((categoryId) => categoryId !== id));
         } else {
-            // Si no está seleccionado, se selecciona
+
             setSelectedCategories([...selectedCategories, id]);
         }
     };
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     },
     categoryButton: {
         backgroundColor: "#FFFFFF",
-        width: "30%", // Ajuste para que se acomoden 3 botones por fila
+        width: "30%",
         height: 30,
         justifyContent: "center",
         alignItems: "center",

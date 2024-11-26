@@ -9,8 +9,8 @@ const WorkerImageListView = () => {
     ];
 
     const getShuffledImages = () => {
-        const repeatedImages = [...images, ...images, ...images]; // Repetir imágenes
-        return repeatedImages.sort(() => Math.random() - 0.5); // Mezclar aleatoriamente
+        const repeatedImages = [...images, ...images, ...images];
+        return repeatedImages.sort(() => Math.random() - 0.5);
     };
 
     const shuffledImages = getShuffledImages();

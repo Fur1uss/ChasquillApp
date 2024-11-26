@@ -11,11 +11,11 @@ const { width } = Dimensions.get('window');
 const { height } = Dimensions.get('window');
 
 const ImageCarousel = () => {
-  const flatListRef = useRef(null); // Referencia al FlatList
-  const [currentIndex, setCurrentIndex] = useState(0); // Índice de la imagen actual
-  const scrollX = useRef(new Animated.Value(0)).current; // Para manejar la animación
+  const flatListRef = useRef(null); 
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const scrollX = useRef(new Animated.Value(0)).current; 
 
-  // Efecto para mover automáticamente el carrusel
+
   useEffect(() => {
     const interval = setInterval(() => {
       const nextIndex = (currentIndex + 1) % images.length;
@@ -24,9 +24,9 @@ const ImageCarousel = () => {
         offset: nextIndex * width,
         animated: true,
       });
-    }, 3000); // Cambiar cada 3 segundos
+    }, 3000);
 
-    return () => clearInterval(interval); // Limpiar el intervalo cuando el componente se desmonte
+    return () => clearInterval(interval); 
   }, [currentIndex]);
 
   const renderItem = ({ item }) => (
@@ -62,8 +62,8 @@ const styles = StyleSheet.create({
     },
     image: {
       width: "70%",
-      height: height * 0.135, // Relación 16:9 (ancho * alto/ancho)
-      resizeMode: "stretch", // Cambia a 'contain' si prefieres que no se recorte
+      height: height * 0.135,
+      resizeMode: "stretch",
       borderRadius: 10,
     },
   });

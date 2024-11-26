@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, Image, StyleSheet,TouchableOpacity} from 'react-native';
 
 const MaestrosScroll = () => {
-  // Array para repetir las imágenes
+
   const imageArray = Array(20).fill(null);
 
   return (

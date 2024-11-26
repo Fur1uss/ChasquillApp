@@ -8,9 +8,9 @@ const AlertPopup = ({ message, onClose, isError }) => {
         FigtreeBold: require("../assets/fonts/FigtreeBold.ttf"),
     });
 
-    const bounceValue = useRef(new Animated.Value(0)).current; // Animación de rebote al aparecer
-    const fadeValue = useRef(new Animated.Value(1)).current; // Animación de opacidad para desaparecer
-    const [isVisible, setIsVisible] = useState(true); // Estado para controlar la visibilidad del popup
+    const bounceValue = useRef(new Animated.Value(0)).current;
+    const fadeValue = useRef(new Animated.Value(1)).current;
+    const [isVisible, setIsVisible] = useState(true); 
 
     useEffect(() => {
         // Animación de rebote al aparecer
@@ -23,18 +23,18 @@ const AlertPopup = ({ message, onClose, isError }) => {
     }, []);
 
     const handleClose = () => {
-        // Animación de desvanecimiento y escala al cerrar
+
         Animated.timing(fadeValue, {
-            toValue: 0, // Reduce la opacidad a 0 para hacerlo invisible
+            toValue: 0,
             duration: 300,
             useNativeDriver: true,
         }).start();
 
-        // Después de que la animación de cierre termine, cambiamos la visibilidad
+
         setTimeout(() => {
             setIsVisible(false);
-            onClose(); // Llamar a la función onClose pasada como prop
-        }, 300); // Tiempo que dura la animación de salida (300ms)
+            onClose();
+        }, 300);
     };
 
     if (!fontsLoaded || !isVisible) return null;
@@ -48,10 +48,10 @@ const AlertPopup = ({ message, onClose, isError }) => {
                     {
                         transform: [
                             {
-                                scale: bounceValue, // Animación de rebote al aparecer
+                                scale: bounceValue,
                             },
                         ],
-                        opacity: fadeValue, // Animación de desvanecimiento al cerrar
+                        opacity: fadeValue,
                     },
                 ]}
             >
